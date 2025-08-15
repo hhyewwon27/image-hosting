@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>냥무위키</title>
+  <link rel="stylesheet" href="style.css">
+  <style>/* 기본 세팅 */
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    /* 네비게이션 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px 20px;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .logo img{
+      height: 36px;
+      width: auto;
+      display: block;
+    }
+    
+    .search input {
+      padding: 5px;
+      border: none;
+      border-radius: 4px;
+    }
+    
+    .menu a {
+      margin-left: 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    /* 전체 레이아웃 */
+    .container {
+      display: flex;
+    }
+    
+    /* 사이드바 */
+    .sidebar {
+      width: 250px;
+      background-color: #e0e0e0;
+      padding: 20px;
+      height: calc(100vh - 50px);
+      position: sticky;
+      top: 50px;
+      overflow-y: auto;
+    }
+    
+    .sidebar h2 {
+      font-size: 18px;
+      margin-top: 0;
+    }
+    
+    .toc {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .toc li {
+      margin-bottom: 10px;
+    }
+    
+    .toc a {
+      text-decoration: none;
+      color: #2e7d32;
+    }
+    
+    .toc a:hover {
+      text-decoration: underline;
+    }
+    .sidebar-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* 본문 */
+    .content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: white;
+    }
+    
+    .content h1 {
+      font-size: 32px;
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 10px;
+    }
+    
+    /* 문단 번호 자동 */
+    .content {
+      counter-reset: section;
+    }
+    
+    .section {
+      margin-top: 40px;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-header h2 {
+      font-size: 24px;
+      position: relative;
+      margin: 0;
+      padding-left: 30px;
+      background-color: #f0f0f0;
+      border-left: 5px solid #4caf50;
+    }
+    
+    .section-header h2::before {
+      counter-increment: section;
+      content: counter(section) ". ";
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      color: #4caf50;
+    }
+    
+    .edit-link {
+      margin-left: 10px;
+      font-size: 14px;
+      color: #1565c0;
+      text-decoration: none;
+    }
+    
+    .edit-link:hover {
+      text-decoration: underline;
+    }
+    
+    /* 내부 링크 */
+    .content a {
+      color: #1565c0;
+      text-decoration: underline;
+    }
+    
+    .content ul {
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+    
+    /* 정보박스, 경고박스 */
+    .infobox, .warningbox {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    
+    .infobox {
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+    }
+    
+    .warningbox {
+      background-color: #ffebee;
+      border: 1px solid #ef9a9a;
+    }
+    
+    /* 표 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    
+    table th {
+      background-color: #e0e0e0;
+    }
+    
+    /* 코드블럭 */
+    pre {
+      background-color: #263238;
+      color: #eceff1;
+      padding: 15px;
+      overflow-x: auto;
+      border-radius: 5px;
+    }
+    
+    code {
+      font-family: "Source Code Pro", monospace;
+    }
+    
+    /* 푸터 */
+    .footer {
+      text-align: center;
+      padding: 15px;
+      background-color: #c8e6c9;
+      color: #333;
+    }
+    
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        background-color: #d7ffd9;
+      }
+    }
+    
+    .shows-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .show-card {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+    }
+
+    .poster-wrap {
+      flex-shrink: 0;
+      width: 180px;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .show-poster {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .show-body {
+      flex: 1;
+    }
+
+    .show-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .show-meta {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    .show-setlist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* 밴드별 간격 */
+  padding-left: 0;
+  list-style: none;
+}
+
+.show-setlist li {
+  background-color: #f8f9fa; /* 밝은 회색 배경 */
+  border-left: 5px solid #2e7d32; /* 왼쪽 포인트 컬러 */
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.show-setlist strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: #2e7d32; /* 밴드명 색상 */
+}
+
+.song {
+  display: block; /* 줄바꿈 */
+  line-height: 1.4;
+}
+
+.song-artist {
+  font-weight: bold;
+}
+
+.song-title {
+  font-style: italic;
+}
+
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* 사진과 텍스트 간격 */
+}
+
+.member-photo {
+  width: 80px;  /* 모든 사진 너비 동일 */
+  height: 80px; /* 모든 사진 높이 동일 */
+  object-fit: cover; /* 비율 유지하면서 잘라내기 */
+  border-radius: 5px; /* 모서리 살짝 둥글게 */
+}
+
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+        <img src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/sosa-logo.jpg?v=1" alt="소리사냥 로고">
+        <span>냥무위키</span>
+    </div>
+    <div class="search">
+      <input type="text" placeholder="검색">
+    </div>
+    <nav class="menu">
+      <a href="#">최근 변경</a>
+      <a href="#">임의 문서</a>
+      <a href="#">기여</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+        <div class="sidebar-image">
+            <img src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/sosa-3536.jpg"
+     alt="소사 35·36기 단체사진">
+
+        </div>
+      <h2>목차</h2>
+      <ul class="toc">
+        <li><a href="#section1">개요</a></li>
+        <li><a href="#section2">멤버</a></li>
+        <li><a href="#section3">공연정보</a></li>
+        <li><a href="#section4">소리사냥 SNS</a></li>
+        <li><a href="#section5">관련 문서</a></li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <h1>소리사냥</h1>
+
+      <section id="section1" class="section">
+        <div class="section-header">
+          <h2>개요</h2>
+          <a href="#section1" class="edit-link">[편집]</a>
+        </div>
+        <p>소리사냥은 경기대 유일 중앙락밴드 동아리입니다. 락을 좋아하는 사람들이 모여 락 장르의 음악을 자유롭게 합주하고 공연하는 동아리입니다.</p>
+      </section>
+
+      <section id="section2" class="section">
+        <div class="section-header">
+          <h2>멤버</h2>
+          <a href="#section2" class="edit-link">[편집]</a>
+        </div>
+        <h3>35기</h3>
+        <ul class="member-list">
+            <li><a href="#choijunseok">최준석</a></li>
+            <li><a href="#parksuha">박수하</a></li>
+            <li><a href="#leejungwoo">이정우</a></li>
+            <li><a href="#kiminkyung">김인경</a></li>
+            <li><a href="#kimyohwan">김요환</a></li>
+            <li><a href="#songjuhyun">송주현</a></li>
+            <li><a href="#kimseongjin">김성진</a></li>
+            <li><a href="#jeongsera">정세라</a></li>
+            <li><a href="#chokyeonghwan">조경환</a></li>
+            <li><a href="#sonhyewon">손혜원</a></li>
+            <li><a href="#kimseohyun">김서현</a></li>
+            <li><a href="#yunchaeyeong">윤채영</a></li>
+            <li><a href="#janghaneum">장한음</a></li>
+          </ul>
+
+          <h3>36기</h3>
+          <ul class="member-list">
+            <li><a href="#sonyujin">손유진</a></li>
+            <li><a href="#leeshinyoung">이신영</a></li>
+            <li><a href="#leejunheon">이준헌</a></li>
+            <li><a href="#jeongjaemin">정재민</a></li>
+            <li><a href="#jojaehoon">조재훈</a></li>
+            <li><a href="#byeonseungjun">변승준</a></li>
+            <li><a href="#kimheeyoon">김희윤</a></li>
+            <li><a href="#parkhyesung">박혜승</a></li>
+            <li><a href="#choijeongeun">최정은</a></li>
+            <li><a href="#kimminseo">김민서</a></li>
+            <li><a href="#shinyeseo">신예서</a></li>
+            <li><a href="#imgaeul">임가을</a></li>
+          </ul>
+
+      </section>
+      </section>
+<section id="choijunseok" class="section">
+  <div class="section-header">
+    <h2>최준석</h2>
+    <a href="#choijunseok" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-1choi.jpg" alt="최준석">
+    <p>소리사냥 회장. 35기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="parksuha" class="section">
+  <div class="section-header">
+    <h2>박수하</h2>
+    <a href="#parksuha" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-2park.jpg" alt="박수하">
+    <p>소리사냥 부회장. 35기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="leejungwoo" class="section">
+  <div class="section-header">
+    <h2>이정우</h2>
+    <a href="#leejungwoo" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-3lee.jpg" alt="이정우">
+    <p>35기 보컬.</p>
+  </div>
+</section>
+
+<section id="kiminkyung" class="section">
+  <div class="section-header">
+    <h2>김인경</h2>
+    <a href="#kiminkyung" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-4kim.jpg" alt="김인경">
+    <p>35기 보컬.</p>
+  </div>
+</section>
+
+
+      <section id="kimyohwan" class="section">
+  <div class="section-header">
+    <h2>김요환</h2>
+    <a href="#kimyohwan" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-5kimyo.jpg" alt="김요환">
+    <p>35기 드러머.</p>
+  </div>
+</section>
+
+<section id="songjuhyun" class="section">
+  <div class="section-header">
+    <h2>송주현</h2>
+    <a href="#songjuhyun" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-6song.jpg" alt="송주현">
+    <p>35기 키보드.</p>
+  </div>
+</section>
+
+<section id="kimseongjin" class="section">
+  <div class="section-header">
+    <h2>김성진</h2>
+    <a href="#kimseongjin" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-7kimsung.jpg" alt="김성진">
+    <p>35기 드러머.</p>
+  </div>
+</section>
+
+<section id="jeongsera" class="section">
+  <div class="section-header">
+    <h2>정세라</h2>
+    <a href="#jeongsera" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-8jung.jpg" alt="정세라">
+    <p>35기 베이시스트.</p>
+  </div>
+</section>
+
+<section id="chokyeonghwan" class="section">
+  <div class="section-header">
+    <h2>조경환</h2>
+    <a href="#chokyeonghwan" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-9jo.jpg" alt="조경환">
+    <p>35기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="sonhyewon" class="section">
+  <div class="section-header">
+    <h2>손혜원</h2>
+    <a href="#sonhyewon" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-10son.jpg" alt="손혜원">
+    <p>35기 드러머.</p>
+  </div>
+</section>
+
+<section id="kimseohyun" class="section">
+  <div class="section-header">
+    <h2>김서현</h2>
+    <a href="#kimseohyun" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-11kimseo.jpg" alt="김서현">
+    <p>35기 베이시스트.</p>
+  </div>
+</section>
+
+<section id="yunchaeyeong" class="section">
+  <div class="section-header">
+    <h2>윤채영</h2>
+    <a href="#yunchaeyeong" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-12yun.jpg" alt="윤채영">
+    <p>35기 키보드.</p>
+  </div>
+</section>
+
+<section id="janghaneum" class="section">
+  <div class="section-header">
+    <h2>장한음</h2>
+    <a href="#janghaneum" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-13jang.jpg" alt="장한음">
+    <p>35기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="sonyujin" class="section">
+  <div class="section-header">
+    <h2>손유진</h2>
+    <a href="#sonyujin" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="손유진">
+    <p>36기 보컬.</p>
+  </div>
+</section>
+
+<section id="leeshinyoung" class="section">
+  <div class="section-header">
+    <h2>이신영</h2>
+    <a href="#leeshinyoung" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="이신영">
+    <p>36기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="leejunheon" class="section">
+  <div class="section-header">
+    <h2>이준헌</h2>
+    <a href="#leejunheon" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="이준헌">
+    <p>36기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="jeongjaemin" class="section">
+  <div class="section-header">
+    <h2>정재민</h2>
+    <a href="#jeongjaemin" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="정재민">
+    <p>36기 기타리스트.</p>
+  </div>
+</section>
+
+<section id="jojaehoon" class="section">
+  <div class="section-header">
+    <h2>조재훈</h2>
+    <a href="#jojaehoon" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="조재훈">
+    <p>36기 기타리스트. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="byeonseungjun" class="section">
+  <div class="section-header">
+    <h2>변승준</h2>
+    <a href="#byeonseungjun" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="변승준">
+    <p>36기 드러머. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="kimheeyoon" class="section">
+  <div class="section-header">
+    <h2>김희윤</h2>
+    <a href="#kimheeyoon" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="김희윤">
+    <p>36기 베이시스트. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="parkhyesung" class="section">
+  <div class="section-header">
+    <h2>박혜승</h2>
+    <a href="#parkhyesung" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="박혜승">
+    <p>36기 베이시스트. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="choijeongeun" class="section">
+  <div class="section-header">
+    <h2>최정은</h2>
+    <a href="#choijeongeun" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="최정은">
+    <p>36기 베이시스트. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="kimminseo" class="section">
+  <div class="section-header">
+    <h2>김민서</h2>
+    <a href="#kimminseo" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="김민서">
+    <p>36기 보컬. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="shinyeseo" class="section">
+  <div class="section-header">
+    <h2>신예서</h2>
+    <a href="#shinyeseo" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="신예서">
+    <p>36기 키보드. [개인 설명 작성]</p>
+  </div>
+</section>
+
+<section id="imgaeul" class="section">
+  <div class="section-header">
+    <h2>임가을</h2>
+    <a href="#imgaeul" class="edit-link">[편집]</a>
+  </div>
+  <div class="member-card">
+    <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/파일명.jpg" alt="임가을">
+    <p>36기 키보드. [개인 설명 작성]</p>
+  </div>
+</section>
+
+
+      <section id="section3" class="section">
+  <div class="section-header">
+    <h2>공연정보</h2>
+    <a href="#section3" class="edit-link">[편집]</a>
+  </div>
+
+  <div class="shows-grid">
+    <!-- 1) 2024-05-23 정기공연 -->
+    <article class="show-card">
+      <div class="poster-wrap">
+        <a href="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/240523.jpg" target="_blank" rel="noopener">
+          <img class="show-poster"
+               src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/240523.jpg"
+               alt="2024-05-23 1학기 정기공연 포스터"
+               loading="lazy">
+        </a>
+      </div>
+      <div class="show-body">
+        <p class="show-title">2024년 소리사냥 1학기 정기공연</p>
+        <p class="show-meta">2024-05-23 · 경기대 수원캠 어울림관 소극장</p>
+        <ol class="show-setlist">
+  <li>
+    <strong>&lt;34기 썩은양말&gt;</strong>
+    <span class="song"><span class="song-artist">MUSE</span> – <span class="song-title">PANIC STATION</span></span>
+    <span class="song"><span class="song-artist">크라잉넛</span> – <span class="song-title">좋지 아니한가</span></span>
+    <span class="song"><span class="song-artist">조장혁</span> – <span class="song-title">중독된 사랑</span></span>
+    <span class="song"><span class="song-artist">Green Day</span> – <span class="song-title">DILEMMA</span></span>
+    <span class="song"><span class="song-artist">Oasis</span> – <span class="song-title">CHAMPAGNE SUPERNOVA</span></span>
+  </li>
+
+  <li>
+    <strong>&lt;35기 그린퍼즈&gt;</strong>
+    <span class="song"><span class="song-artist">야다</span> – <span class="song-title">이미 슬픈 사랑</span></span>
+    <span class="song"><span class="song-artist">설</span> – <span class="song-title">DRY FLOWER</span></span>
+    <span class="song"><span class="song-artist">Walk The Moon</span> – <span class="song-title">SHUT UP AND DANCE</span></span>
+    <span class="song"><span class="song-artist">검정치마</span> – <span class="song-title">ANTIFREEZE</span></span>
+  </li>
+
+  <li>
+    <strong>&lt;35기 블랙아웃&gt;</strong>
+    <span class="song"><span class="song-artist">Avril Lavigne</span> – <span class="song-title">SK8ER BOI</span></span>
+    <span class="song"><span class="song-artist">MUSE</span> – <span class="song-title">STARLIGHT</span></span>
+    <span class="song"><span class="song-artist">Blur</span> – <span class="song-title">SONG 2</span></span>
+    <span class="song"><span class="song-artist">AC/DC</span> – <span class="song-title">HIGHWAY TO HELL</span></span>
+  </li>
+
+  <li>
+    <strong>&lt;34기 썩은양말&gt;</strong>
+    <span class="song"><span class="song-artist">로맨틱펀치</span> – <span class="song-title">파이트 클럽</span></span>
+    <span class="song"><span class="song-artist">MCR</span> – <span class="song-title">TEENAGERS</span></span>
+    <span class="song"><span class="song-artist">Dio</span> – <span class="song-title">HOLY DIVER</span></span>
+    <span class="song"><span class="song-artist">Metallica</span> – <span class="song-title">FOR WHOM THE BELL TOLLS</span></span>
+  </li>
+</ol>
+
+
+      </div>
+    </article>
+    <!-- 3) 2024-11-09 공연 -->
+<article class="show-card">
+  <div class="poster-wrap">
+    <a href="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/241109.jpg" target="_blank" rel="noopener">
+      <img class="show-poster"
+           src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/241109.jpg"
+           alt="2024-11-09 공연 포스터"
+           loading="lazy">
+    </a>
+  </div>
+
+  <div class="show-body">
+    <p class="show-title">2024-11-09 공연</p>
+    <p class="show-meta">2024-11-09</p>
+
+    <ol class="show-setlist">
+      <li>
+        <strong>35기 블랙퍼즈</strong>
+        <span class="song"><span class="song-artist">Metallica</span> – <span class="song-title">Enter Sandman</span></span>
+        <span class="song"><span class="song-artist">The pretty reckless</span> – <span class="song-title">Make me wanna die</span></span>
+        <span class="song"><span class="song-artist">Radiohead</span> – <span class="song-title">Anyone can play guitar</span></span>
+        <span class="song"><span class="song-artist">Paramore</span> – <span class="song-title">All I wanted</span></span>
+      </li>
+
+      <li>
+        <strong>34기 썩은 양말</strong>
+        <span class="song"><span class="song-artist">무한궤도</span> – <span class="song-title">그대에게</span></span>
+        <span class="song"><span class="song-artist">Oasis</span> – <span class="song-title">Cigarettes &amp; Alcohol</span></span>
+        <span class="song"><span class="song-artist">Bon Jovi</span> – <span class="song-title">You Give Love A Bad Name</span></span>
+        <span class="song"><span class="song-artist">Red Hot Chill Peppers</span> – <span class="song-title">Can't stop</span></span>
+        <span class="song"><span class="song-artist">My Chemical Romance</span> – <span class="song-title">Disenchanted</span></span>
+      </li>
+
+      <li>
+        <strong>OB 검은마차</strong>
+        <span class="song"><span class="song-artist">쏜애플</span> – <span class="song-title">행복한 나를</span></span>
+        <span class="song"><span class="song-artist">쏜애플</span> – <span class="song-title">로마네스크</span></span>
+        <span class="song"><span class="song-artist">쏜애플</span> – <span class="song-title">은하</span></span>
+        <span class="song"><span class="song-artist">쏜애플</span> – <span class="song-title">멸종</span></span>
+      </li>
+
+      <li>
+        <strong>35기 블랙퍼즈</strong>
+        <span class="song"><span class="song-artist">Green Day</span> – <span class="song-title">Holiday</span></span>
+        <span class="song"><span class="song-artist">Maneskin</span> – <span class="song-title">I WANNA BE YOUR SLAVE</span></span>
+        <span class="song"><span class="song-artist">Green Day</span> – <span class="song-title">21 Guns</span></span>
+        <span class="song"><span class="song-artist">Bon Jovi</span> – <span class="song-title">Livin' on a prayer</span></span>
+      </li>
+
+      <li>
+        <strong>34기 썩은 양말</strong>
+        <span class="song"><span class="song-artist">Green day</span> – <span class="song-title">Bobby Sox</span></span>
+        <span class="song"><span class="song-artist">Scorpions</span> – <span class="song-title">Rock You Like a Hurricane</span></span>
+        <span class="song"><span class="song-artist">브로큰 발렌타인</span> – <span class="song-title">알루미늄</span></span>
+        <span class="song"><span class="song-artist">Guns N' Roses</span> – <span class="song-title">Sweet Child O' Mine</span></span>
+      </li>
+    </ol>
+  </div>
+</article>
+<!-- 2) 2025-05-23 공연 -->
+<article class="show-card">
+  <div class="poster-wrap">
+    <a href="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/250523.jpg" target="_blank" rel="noopener">
+      <img class="show-poster"
+           src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/250523.jpg"
+           alt="2025-05-23 공연 포스터"
+           loading="lazy">
+    </a>
+  </div>
+
+  <div class="show-body">
+    <p class="show-title">2025-05-23 공연</p>
+    <p class="show-meta">2025-05-23</p>
+
+    <ol class="show-setlist">
+      <li>
+        <strong>35기 블랙퍼즈 I</strong>
+        <span class="song"><span class="song-artist">SURL</span> – <span class="song-title">What time is now</span></span>
+        <span class="song"><span class="song-artist">Muse</span> – <span class="song-title">Feeling Good</span></span>
+        <span class="song"><span class="song-artist">Radiohead</span> – <span class="song-title">Just</span></span>
+        <span class="song"><span class="song-artist">My Chemical Romance</span> – <span class="song-title">I'm Not Okay</span></span>
+      </li>
+
+      <li>
+        <strong>35기 블랙퍼즈 II</strong>
+        <span class="song"><span class="song-artist">YB</span> – <span class="song-title">크게 라디오를 켜고</span></span>
+        <span class="song"><span class="song-artist">검정치마</span> – <span class="song-title">Big Love</span></span>
+        <span class="song"><span class="song-artist">Red Hot Chili Peppers</span> – <span class="song-title">Can't Stop</span></span>
+        <span class="song"><span class="song-artist">Muse</span> – <span class="song-title">Time Is Running Out</span></span>
+      </li>
+
+      <li>
+        <strong>36기 KMK</strong>
+        <span class="song"><span class="song-artist">실리카겔</span> – <span class="song-title">No Pain</span></span>
+        <span class="song"><span class="song-artist">한로로</span> – <span class="song-title">비틀비틀 짝짜쿵</span></span>
+        <span class="song"><span class="song-artist">터치드</span> – <span class="song-title">Addiction</span></span>
+        <span class="song"><span class="song-artist">Blur</span> – <span class="song-title">Charmless Man</span></span>
+      </li>
+
+      <li>
+        <strong>36기 미정</strong>
+        <span class="song"><span class="song-artist">Green Day</span> – <span class="song-title">American Idiot</span></span>
+        <span class="song"><span class="song-artist">혁오</span> – <span class="song-title">가죽자켓</span></span>
+        <span class="song"><span class="song-artist">Silica Gel</span> – <span class="song-title">9</span></span>
+        <span class="song"><span class="song-artist">Silica Gel</span> – <span class="song-title">Ryudejakeiru</span></span>
+      </li>
+    </ol>
+  </div>
+</article>
+
+  </div>
+</section>
+
+
+
+      <section id="section4" class="section">
+  <div class="section-header">
+    <h2>소리사냥 SNS</h2>
+    <a href="#section4" class="edit-link">[편집]</a>
+  </div>
+  <ul>
+    <li><a href="https://www.youtube.com/@soundhunt41" target="_blank">소리사냥 유튜브</a></li>
+    <li><a href="https://www.instagram.com/soundhunt_official" target="_blank">소리사냥 인스타그램</a></li>
+  </ul>
+
+  <div class="infobox">
+    <strong>정보</strong> : 소리사냥은 공식 유튜브 채널과 인스타그램 계정을 운영합니다.
+  </div>
+
+  <div class="warningbox">
+    <strong>경고</strong> : 링크는 외부 사이트로 연결됩니다.
+  </div>
+</section>
+
+
+      <section id="section5" class="section">
+        <div class="section-header">
+          <h2>관련 문서</h2>
+          <a href="#section4" class="edit-link">[편집]</a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>문서명</th>
+              <th>설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="#">나무위키 프로젝트</a></td>
+              <td>나무위키에서 진행하는 프로젝트 모음</td>
+            </tr>
+            <tr>
+              <td><a href="#">나무위키 운영방침</a></td>
+              <td>운영 규칙 및 정책</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <pre><code>
+</code></pre>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 나무위키 클론 프로젝트</p>
+  </footer>
+</body>
+</html>
