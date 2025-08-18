@@ -317,9 +317,11 @@
 
 .member-card {
   display: flex;
-  align-items: center;
-  gap: 10px; /* 사진과 텍스트 간격 */
+  flex-direction: column; /* 세로로 쌓이도록 변경 */
+  align-items: flex-start; /* 왼쪽 정렬 */
+  gap: 10px; /* 사진과 문단 사이 간격 유지 */
 }
+
 
 .member-photo {
   width: 80px;  /* 모든 사진 너비 동일 */
@@ -965,6 +967,7 @@ function toggleCat(id) {
 
 </body>
 </html>
+
 
 
 
