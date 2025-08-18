@@ -328,6 +328,17 @@
   border-radius: 5px; /* 모서리 살짝 둥글게 */
 }
 
+.hidden-cat {
+  display: none;
+  margin-top: 10px;
+}
+
+.member-card .cat-name {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
   </style>
 </head>
 <body>
@@ -421,7 +432,17 @@
   </div>
   <div class="member-card">
     <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-1choi.jpg" alt="최준석">
-    <p>소리사냥 회장. 35기 기타리스트.</p>
+    <p>소리사냥 회장이자 기타리스트이다.</p>
+    <p>검정치마와 혁오를 굉장히 좋아한다. 검치, 혁오 노래 듣다가 길 잃은 적도 많다.</p>
+    <p>행정학 전공인지 소사학 전공인지 헷갈릴 정도로 항상 전공 수업을 출튀하고 동방으로 온다.</p>
+    <p>본가는 인천이고 연무동에서 자취 중인데, 직장은 홍대라 이름을 ‘최길동’으로 바꿔야하지 않나 싶다.</p>
+    <p><span class="cat-name" onclick="toggleCat('raun')">라운이</span>라는 이름의 치즈냥이를 키우는데 본인과 굉장히 닮았다.</p>
+    <p>웃음소리 특이한 편이며, 가끔 노잼 드립을 날린다.</p>
+
+    <!-- 숨겨진 라운이 사진 -->
+    <div id="raun" class="hidden-cat">
+      <img src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/raun.jpg" alt="라운이" class="member-photo">
+    </div>
   </div>
 </section>
 
@@ -432,7 +453,18 @@
   </div>
   <div class="member-card">
     <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-2park.jpg" alt="박수하">
-    <p>소리사냥 부회장. 35기 기타리스트.</p>
+    <p>소리사냥 부회장이자 35기 기타리스트이다.</p>
+    <p>락을 좋아해서 기타 들고 있으면 주변 사람들까지 락킹하게 만든다.</p>
+    <p>전공은 미술경영이지만, 기타와 락을 훨씬 좋아하는 듯하다.</p>
+    <p>본가는 서산인데, 연무동에서 자취 중이다. 본가 갈 때 힘들지만 가면 고양이 
+      <span class="cat-name" onclick="toggleCat('nabi')">나비</span>가 반겨준다.</p>
+    <p>목소리가 성우급이라 가끔 말만 들어도 드라마틱하게 들린다.</p>
+    <p>머리는 꼬불꼬불 사자머리에 앞머리까지 꼬불한 게 너무 귀엽다.</p> 
+    <p>입술에 피어싱이 있다. 구멍으로 물 나오는지 실험해봤는데 안 나온다고 한다.</p>
+    <!-- 숨겨진 나비 사진 -->
+    <div id="nabi" class="hidden-cat">
+      <img src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/nabi.jpg" alt="나비" class="member-photo">
+    </div>
   </div>
 </section>
 
@@ -443,7 +475,12 @@
   </div>
   <div class="member-card">
     <img class="member-photo" src="https://raw.githubusercontent.com/hhyewwon27/image-hosting/main/35-3lee.jpg" alt="이정우">
-    <p>35기 보컬.</p>
+    <p>35기 보컬이다. 악기를 다루고 싶다는 말은 입에 달고 살지만, 정작 연습은 꿈에서만 하는 타입이다.</p>
+    <p>본가는 안양이지만 연무동에서 자취 중이다. 약간의 결벽증 덕에 집이 늘 깨끗해서, 자취방은 술판 열기 좋은 '연무동 만남의 광장'이 됐다.</p>
+    <p>원래는 발라드와 인디를 좋아했으나, 소리사냥에 들어온 뒤 음악적 정체성을 잠시 분실한 상태이다.</p>
+    <p>스포츠과학 전공이었으나 아이러니하게도 할 줄 아는 스포츠가 없어, 회계세무학으로 전과하였다.</p>
+    <p>하루 일과는 밥 먹고 운동하기 뿐이라 소리사냥 내 몸싸움 1티어로 예상된다.</p>
+    <p>소리사냥 내 첫째답게 학식 중에서 감성코어를 제일 좋아한다.</p>
   </div>
 </section>
 
@@ -917,8 +954,18 @@
   <footer class="footer">
     <p>© 냥무위키 소리사냥</p>
   </footer>
+
+  <script>
+/* 모든 고양이 사진 재활용 가능 */
+function toggleCat(id) {
+  const cat = document.getElementById(id);
+  cat.style.display = (cat.style.display === 'block') ? 'none' : 'block';
+}
+</script>
+
 </body>
 </html>
+
 
 
 
